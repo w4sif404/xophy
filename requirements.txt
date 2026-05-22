@@ -148,5 +148,5 @@ wsproto==1.3.2
 xhtml2pdf==0.2.17
 xlsxwriter==3.2.9
 XMind==1.2.0
--e git+https://github.com/YOUR_USERNAME/xophy.git@c6cf03a9adb6463bfdd2bee953625d3e6272b7df#egg=xophy
+-e
 yarl==1.23.0
