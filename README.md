@@ -33,8 +33,7 @@ XOPHY is a next-generation reconnaissance framework designed for **ethical OSINT
 
 ```bash
 # Clone the repository
-git clone [https://github.com/w4sif404/xophy.git](https://github.com/w4sif404/xophy.git)
-
+git clone https://github.com/w4sif404/xophy.git
 # Enter the directory
 cd xophy
 
@@ -47,3 +46,5 @@ source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
+# 4. Run The Tool
+python3 core/cli.py
