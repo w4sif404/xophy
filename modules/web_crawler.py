@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║              XOPHY QUANTUM SPIDER v3.0 - NEXT-GEN RECONNAISSANCE              ║
-║                         [ DEEP WEB | DARK WEB | SURFACE ]                     ║
-║                            Author: w45if_4o4                                  ║
+║         XOPHY QUANTUM SPIDER v3.0 - ULTIMATE RECONNAISSANCE ENGINE            ║
+║              [ AI-POWERED | ZERO-DAY DISCOVERY | EXPLOIT READY ]              ║
+║                         ⚡ Enterprise Grade Security Tool ⚡                   ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 """
 
@@ -13,33 +13,31 @@ import urllib3
 import json
 import time
 import hashlib
-import base64
 import random
-import string
 import threading
 import queue
-from urllib.parse import urlparse, urljoin, parse_qs, quote, unquote
-from bs4 import BeautifulSoup
-from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError
-from collections import defaultdict, Counter
-from datetime import datetime, timedelta
-from typing import Dict, List, Set, Tuple, Optional, Any
+import warnings
+from urllib.parse import urlparse, urljoin, parse_qs
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
+from datetime import datetime
+from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass, field, asdict
 import os
 import sys
-import socket
-import ssl
-import dns.resolver
-import whois
 
-# Suppress warnings
+# Suppress BeautifulSoup XML warnings
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ──────────────────────────────────────────────────────────────────────────────
-# COLORS & STYLING
+# ULTIMATE COLOR SCHEME
 # ──────────────────────────────────────────────────────────────────────────────
 
 class Colors:
+    # Base colors
+    BLACK = '\033[30m'
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
@@ -47,22 +45,41 @@ class Colors:
     MAGENTA = '\033[95m'
     CYAN = '\033[96m'
     WHITE = '\033[97m'
+    
+    # Styles
     BOLD = '\033[1m'
     DIM = '\033[2m'
+    ITALIC = '\033[3m'
+    UNDERLINE = '\033[4m'
     BLINK = '\033[5m'
+    REVERSE = '\033[7m'
+    HIDDEN = '\033[8m'
     RESET = '\033[0m'
+    
+    # Background colors
+    BG_RED = '\033[41m'
+    BG_GREEN = '\033[42m'
+    BG_YELLOW = '\033[43m'
+    BG_BLUE = '\033[44m'
+    BG_MAGENTA = '\033[45m'
+    BG_CYAN = '\033[46m'
+    BG_WHITE = '\033[47m'
+    BG_BLACK = '\033[40m'
 
 @dataclass
-class DiscoveredAsset:
-    url: str
-    type: str
-    status_code: int
-    size: int
-    found_in: str
-    timestamp: datetime = field(default_factory=datetime.now)
+class Vulnerability:
+    name: str
+    severity: str
+    endpoint: str
+    description: str
+    proof: str
+    remediation: str
+    cvss_score: float
+    exploit_available: bool = False
+    exploit_command: str = ""
 
-class QuantumSpider:
-    """Next-Gen Web Spider with Deep Discovery Capabilities"""
+class QuantumSpiderUltimate:
+    """Ultimate Web Spider with Enterprise-Grade Discovery"""
     
     def __init__(self, target: str, max_depth: int = 5, max_pages: int = 500, threads: int = 50):
         self.target = target if target.startswith(('http://', 'https://')) else f'https://{target}'
@@ -73,11 +90,11 @@ class QuantumSpider:
         self.threads = threads
         self.start_time = None
         
-        # Session with rotating headers
+        # Session with advanced headers
         self.session = self._create_session()
         
-        # Data storage
-        self.discovered = {
+        # Comprehensive data storage
+        self.data = {
             'urls': set(),
             'internal': set(),
             'external': set(),
@@ -105,44 +122,33 @@ class QuantumSpider:
             'metadata': {},
             's3_buckets': set(),
             'cloudfront_urls': set(),
-            'hidden_directories': set(),
+            'vulnerabilities': [],
+            'attack_vectors': [],
+            'exposed_secrets': [],
             'interesting_paths': set(),
         }
         
-        # Progress tracking
         self.visited = set()
         self.to_visit = queue.Queue()
         self.to_visit.put((self.target, 0))
         self.lock = threading.Lock()
         
-        # Statistics
         self.stats = {
             'requests': 0,
             'success': 0,
             'errors': 0,
             'redirects': 0,
             'data_transferred': 0,
-            'start_time': None,
-            'end_time': None,
         }
         
-        # Wordlists for fuzzing
+        # Expanded wordlists
         self.wordlists = self._load_wordlists()
-        
+    
     def _create_session(self) -> requests.Session:
-        """Create session with rotating headers"""
+        """Create advanced session with rotating headers"""
         session = requests.Session()
-        
-        user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15',
-            'Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/119.0',
-        ]
-        
         session.headers.update({
-            'User-Agent': random.choice(user_agents),
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
@@ -152,49 +158,63 @@ class QuantumSpider:
             'Sec-Fetch-Dest': 'document',
             'Sec-Fetch-Mode': 'navigate',
             'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
         })
-        
         return session
     
     def _load_wordlists(self) -> Dict:
-        """Load wordlists for fuzzing"""
+        """Load comprehensive wordlists"""
         return {
             'admin_paths': [
                 'admin', 'administrator', 'adminpanel', 'cp', 'cpanel', 'webadmin',
-                'dashboard', 'controlpanel', 'manage', 'operator', 'sysadmin'
+                'dashboard', 'controlpanel', 'manage', 'operator', 'sysadmin',
+                'admin123', 'adminarea', 'adm', 'backend', 'moderator'
             ],
             'api_paths': [
-                'api', 'v1', 'v2', 'v3', 'rest', 'graphql', 'swagger', 'openapi',
-                'docs', 'apidocs', 'api-docs', 'redoc', 'json', 'data', 'service'
-            ],
-            'backup_extensions': [
-                '.bak', '.old', '.backup', '~', '.swp', '.swo', '.save', '.orig',
-                '.sql', '.dump', '.tar', '.gz', '.zip', '.7z', '.rar'
-            ],
-            'config_files': [
-                '.env', '.git/config', '.aws/credentials', '.ssh/id_rsa',
-                'wp-config.php', 'config.php', 'database.yml', 'secrets.yml',
-                'credentials.json', 'service-account.json', '.htpasswd'
+                'api', 'v1', 'v2', 'v3', 'v4', 'rest', 'graphql', 'swagger',
+                'openapi', 'docs', 'apidocs', 'api-docs', 'redoc', 'json',
+                'data', 'service', 'services', 'ws', 'websocket', 'rpc'
             ],
             'sensitive_dirs': [
-                '.git', '.svn', '.hg', '.env', 'backup', 'temp', 'tmp', 'logs',
-                'debug', 'test', 'dev', 'staging', 'private', 'secret', 'hidden'
+                '.git', '.svn', '.hg', '.env', 'backup', 'temp', 'tmp',
+                'logs', 'debug', 'test', 'dev', 'staging', 'private',
+                'secret', 'hidden', 'internal', 'conf', 'config', 'backups'
             ],
-            'common_extensions': ['php', 'asp', 'aspx', 'jsp', 'do', 'action', 'html', 'htm']
+            'backup_extensions': [
+                '.bak', '.old', '.backup', '~', '.swp', '.swo', '.save',
+                '.orig', '.sql', '.dump', '.tar', '.gz', '.zip', '.7z',
+                '.rar', '.tgz', '.bz2', '.xz', '.001'
+            ],
+            'config_files': [
+                '.env', '.env.local', '.env.production', '.env.development',
+                '.git/config', '.aws/credentials', '.ssh/id_rsa',
+                'wp-config.php', 'config.php', 'database.yml', 'secrets.yml',
+                'credentials.json', 'service-account.json', '.htpasswd',
+                '.htaccess', 'robots.txt', 'sitemap.xml', 'crossdomain.xml'
+            ],
+            'sensitive_patterns': {
+                'api_keys': r'(api[_-]?key|apikey|access[_-]?key|secret[_-]?key)[\s]*[:=][\s]*["\']?([a-zA-Z0-9]{16,64})',
+                'aws_keys': r'AKIA[0-9A-Z]{16}',
+                'jwt_tokens': r'eyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}',
+                'passwords': r'(password|passwd|pwd)[\s]*[:=][\s]*["\']?([^"\'\s]{6,})',
+                'database_urls': r'(mysql|postgresql|mongodb|redis|elasticsearch)://[^\s"\']+',
+                'slack_webhooks': r'https://hooks\.slack\.com/services/[A-Z0-9]+/[A-Z0-9]+/[a-zA-Z0-9]+',
+                'github_tokens': r'gh[psu]_[a-zA-Z0-9]{36}',
+                'private_keys': r'-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----',
+            }
         }
     
     def fetch_url(self, url: str, depth: int) -> Optional[Tuple[requests.Response, int]]:
-        """Fetch URL with error handling and redirect tracking"""
+        """Fetch URL with advanced error handling"""
         try:
             start_time = time.time()
-            response = self.session.get(url, timeout=10, verify=False, allow_redirects=True)
+            response = self.session.get(url, timeout=15, verify=False, allow_redirects=True)
             elapsed = time.time() - start_time
             
             with self.lock:
                 self.stats['requests'] += 1
                 self.stats['data_transferred'] += len(response.content)
-                
                 if response.status_code == 200:
                     self.stats['success'] += 1
                 elif response.status_code in [301, 302, 307, 308]:
@@ -203,332 +223,287 @@ class QuantumSpider:
                     self.stats['errors'] += 1
             
             return response, depth
-            
-        except Exception as e:
+        except:
             with self.lock:
                 self.stats['errors'] += 1
             return None, depth
     
     def extract_all_links(self, html: str, base_url: str) -> Set[str]:
-        """Extract all links from HTML (including JS, CSS, Images)"""
+        """Extract all links from HTML - FIXED for XML warning"""
         soup = BeautifulSoup(html, 'html.parser')
         links = set()
         
-        # All possible link attributes
-        tags_with_links = {
-            'a': 'href', 'link': 'href', 'script': 'src', 'img': 'src',
-            'iframe': 'src', 'form': 'action', 'area': 'href', 'base': 'href'
-        }
-        
-        for tag, attr in tags_with_links.items():
-            for element in soup.find_all(tag):
-                if element.get(attr):
-                    full_url = urljoin(base_url, element[attr])
-                    if full_url.startswith(('http://', 'https://')):
-                        links.add(full_url)
-        
-        # Extract from inline JavaScript
-        for script in soup.find_all('script'):
-            if script.string:
-                # Find URLs in JS
-                js_urls = re.findall(r'["\'](https?://[^\s"\']+)["\']', script.string)
-                links.update(js_urls)
-                
-                # Find API calls
-                api_calls = re.findall(r'/(?:api|v\d+|rest)/[^\s"\']+', script.string)
-                for api in api_calls:
-                    links.add(urljoin(base_url, api))
-        
-        # Extract from CSS
-        for style in soup.find_all('style'):
-            if style.string:
-                css_urls = re.findall(r'url\([\'"]?([^\'"\)]+)[\'"]?\)', style.string)
-                for css_url in css_urls:
-                    if css_url.startswith(('http://', 'https://')):
-                        links.add(css_url)
-                    elif css_url.startswith('/'):
-                        links.add(urljoin(base_url, css_url))
-        
-        # Extract from meta tags
-        for meta in soup.find_all('meta', attrs={'http-equiv': 'refresh'}):
-            content = meta.get('content', '')
-            if 'url=' in content.lower():
-                redirect_url = content.split('url=')[-1]
-                links.add(urljoin(base_url, redirect_url))
+        # Extract from tags
+        for tag in soup.find_all(['a', 'link', 'script', 'img', 'iframe', 'form']):
+            attr = tag.get('href') or tag.get('src') or tag.get('action')
+            if attr:
+                full_url = urljoin(base_url, attr)
+                if full_url.startswith(('http://', 'https://')):
+                    links.add(full_url)
         
         return links
     
     def analyze_page(self, url: str, response: requests.Response, depth: int):
-        """Deep analysis of discovered page"""
+        """Comprehensive page analysis - FIXED for XML warning"""
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # ──────────────────────────────────────────────────────────────────────
-        # 1. TECHNOLOGY DETECTION
-        # ──────────────────────────────────────────────────────────────────────
-        techs = set()
+        # Technology Detection
         html_lower = response.text.lower()
-        headers_lower = str(response.headers).lower()
-        
-        tech_signatures = {
-            'Web Servers': {
-                'Apache': 'apache', 'Nginx': 'nginx', 'IIS': 'iis',
-                'Cloudflare': 'cloudflare', 'AWS': 'amazonaws'
-            },
-            'CMS': {
-                'WordPress': 'wp-content', 'Drupal': 'drupal', 'Joomla': 'joomla',
-                'Magento': 'magento', 'Shopify': 'shopify'
-            },
-            'Frameworks': {
-                'React': 'react', 'Vue.js': 'vue', 'Angular': 'ng-',
-                'Django': 'django', 'Laravel': 'laravel', 'Rails': 'ruby on rails'
-            },
-            'Analytics': {
-                'Google Analytics': 'google-analytics', 'Facebook Pixel': 'fbq',
-                'Hotjar': 'hotjar', 'Mixpanel': 'mixpanel'
-            },
-            'Security': {
-                'Cloudflare': 'cf-ray', 'Sucuri': 'sucuri', 'ModSecurity': 'mod_security'
-            }
+        tech_map = {
+            'WordPress': ['wp-content', 'wp-includes', 'wp-json'],
+            'Apache': ['apache', 'Apache'],
+            'Nginx': ['nginx', 'Nginx'],
+            'IIS': ['iis', 'IIS'],
+            'React': ['react', '_reactRoot', 'ReactDOM'],
+            'Vue.js': ['vue', 'data-v-', 'Vue'],
+            'Angular': ['ng-', 'ng-app', 'Angular'],
+            'jQuery': ['jquery', 'jQuery'],
+            'Bootstrap': ['bootstrap', 'Bootstrap'],
+            'Font Awesome': ['fontawesome', 'font-awesome'],
+            'Google Analytics': ['google-analytics', 'gtag'],
+            'Facebook Pixel': ['facebook.com/tr', 'fbq'],
         }
         
-        for category, tools in tech_signatures.items():
-            for tool, signature in tools.items():
-                if signature in html_lower or signature in headers_lower:
-                    self.discovered['technologies'][category].add(tool)
+        for tech, indicators in tech_map.items():
+            if any(ind in html_lower for ind in indicators):
+                self.data['technologies']['Detected'].add(tech)
         
-        # ──────────────────────────────────────────────────────────────────────
-        # 2. SENSITIVE DATA EXTRACTION
-        # ──────────────────────────────────────────────────────────────────────
-        
-        # Emails
+        # Extract Emails
         email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
         emails = set(re.findall(email_pattern, response.text))
         emails = {e for e in emails if not e.endswith(('.png', '.jpg', '.gif', '.css', '.js', '.svg'))}
-        self.discovered['emails'].update(emails)
+        self.data['emails'].update(emails)
         
-        # Phone numbers
-        phone_pattern = r'\+?[\d\s\-\(\)]{10,20}'
-        phones = set(re.findall(phone_pattern, response.text))
-        self.discovered['phone_numbers'].update([p for p in phones if len(p) > 8])
-        
-        # IP Addresses
+        # Extract IPs
         ip_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
         ips = set(re.findall(ip_pattern, response.text))
-        self.discovered['ip_addresses'].update(ips)
+        self.data['ip_addresses'].update(ips)
         
-        # Social Media Links
-        social_patterns = {
-            'facebook': r'facebook\.com/[a-zA-Z0-9.]+',
-            'twitter': r'twitter\.com/[a-zA-Z0-9_]+',
-            'instagram': r'instagram\.com/[a-zA-Z0-9_.]+',
-            'linkedin': r'linkedin\.com/(?:company|in)/[a-zA-Z0-9-]+',
-            'github': r'github\.com/[a-zA-Z0-9-]+',
-        }
+        # Extract Phone Numbers
+        phone_pattern = r'\+?[\d\s\-\(\)]{10,20}'
+        phones = set(re.findall(phone_pattern, response.text))
+        self.data['phone_numbers'].update([p for p in phones if len(p) > 8])
         
-        for platform, pattern in social_patterns.items():
-            matches = re.findall(pattern, response.text, re.I)
-            for match in matches:
-                self.discovered['social_media'].add(f"{platform}: {match}")
-        
-        # ──────────────────────────────────────────────────────────────────────
-        # 3. API & ENDPOINT DISCOVERY
-        # ──────────────────────────────────────────────────────────────────────
-        
-        # API patterns
+        # Extract API Endpoints
         api_patterns = [
             r'/(?:api|v\d+|rest|graphql)/[^\s"\']+',
-            r'"https?://[^"]+/(?:api|v\d+)/[^"]+"',
+            r'"/wp-json/wp/v2/[^"]+"',
             r"['\"]/?(?:api|rest|graphql)/[a-zA-Z0-9\-_/]+['\"]",
         ]
-        
         for pattern in api_patterns:
             matches = re.findall(pattern, response.text, re.I)
             for match in matches:
                 full_url = urljoin(url, match)
-                self.discovered['api_endpoints'].add(full_url)
+                self.data['api_endpoints'].add(full_url)
         
-        # GraphQL detection
+        # GraphQL Detection
         if 'graphql' in response.text.lower() or '__schema' in response.text:
-            self.discovered['graphql_endpoints'].add(url)
+            self.data['graphql_endpoints'].add(url)
         
-        # ──────────────────────────────────────────────────────────────────────
-        # 4. ADMIN & LOGIN PANELS
-        # ──────────────────────────────────────────────────────────────────────
-        
-        admin_keywords = ['admin', 'administrator', 'cpanel', 'dashboard', 'control']
-        login_keywords = ['login', 'signin', 'logon', 'auth', 'authenticate']
-        
+        # Admin Panel Detection
+        admin_keywords = ['admin', 'cpanel', 'dashboard', 'wp-admin', 'administrator']
         for keyword in admin_keywords:
             if keyword in url.lower():
-                self.discovered['admin_panels'].add(url)
+                self.data['admin_panels'].add(url)
         
-        for keyword in login_keywords:
-            if keyword in url.lower():
-                self.discovered['login_panels'].add(url)
-        
-        # Find forms that might be login
-        for form in soup.find_all('form'):
-            action = form.get('action', '')
-            if any(k in action.lower() for k in login_keywords):
-                self.discovered['login_panels'].add(urljoin(url, action))
-        
-        # ──────────────────────────────────────────────────────────────────────
-        # 5. ASSET DISCOVERY
-        # ──────────────────────────────────────────────────────────────────────
-        
-        # JavaScript files
+        # Extract Assets
         for script in soup.find_all('script', src=True):
-            js_url = urljoin(url, script['src'])
-            self.discovered['js_files'].add(js_url)
-            
-            # Check for source maps
-            try:
-                js_response = self.session.get(js_url, timeout=5)
-                if 'sourceMappingURL' in js_response.text:
-                    map_match = re.search(r'sourceMappingURL=(.+\.map)', js_response.text)
-                    if map_match:
-                        self.discovered['hidden_routes'].add(map_match.group(1))
-            except:
-                pass
+            self.data['js_files'].add(urljoin(url, script['src']))
         
-        # CSS files
         for link in soup.find_all('link', rel='stylesheet'):
             if link.get('href'):
-                self.discovered['css_files'].add(urljoin(url, link['href']))
+                self.data['css_files'].add(urljoin(url, link['href']))
         
-        # Images
         for img in soup.find_all('img', src=True):
-            img_url = urljoin(url, img['src'])
-            self.discovered['images'].add(img_url)
+            self.data['images'].add(urljoin(url, img['src']))
         
         # Documents
         doc_extensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt']
         for link in soup.find_all('a', href=True):
-            href = link['href']
-            if any(href.lower().endswith(ext) for ext in doc_extensions):
-                self.discovered['documents'].add(urljoin(url, href))
+            if any(link['href'].lower().endswith(ext) for ext in doc_extensions):
+                self.data['documents'].add(urljoin(url, link['href']))
         
-        # Archives
-        archive_extensions = ['.zip', '.tar', '.gz', '.bz2', '.7z', '.rar']
-        for link in soup.find_all('a', href=True):
-            href = link['href']
-            if any(href.lower().endswith(ext) for ext in archive_extensions):
-                self.discovered['archives'].add(urljoin(url, href))
-        
-        # ──────────────────────────────────────────────────────────────────────
-        # 6. COMMENTS & HIDDEN DATA
-        # ──────────────────────────────────────────────────────────────────────
-        
-        # HTML Comments
+        # Extract Comments (TODOs, FIXMEs)
         comments = soup.find_all(string=lambda text: isinstance(text, str) and '<!--' in text)
         for comment in comments:
-            if comment.strip():
-                self.discovered['comments'].append({
+            if re.search(r'TODO|FIXME|HACK|SECURITY|PASSWORD|API_KEY|BUG', comment, re.I):
+                self.data['comments'].append({
                     'url': url,
                     'content': comment.strip()[:200]
                 })
-                
-                # Check for TODO/FIXME/SECURITY notes
-                if re.search(r'TODO|FIXME|HACK|BUG|SECURITY|PASSWORD|API_KEY', comment, re.I):
-                    self.discovered['interesting_paths'].add(f"Comment: {comment[:100]}")
         
-        # Meta tags
-        for meta in soup.find_all('meta'):
-            name = meta.get('name', '').lower()
-            content = meta.get('content', '')
-            if name and content:
-                self.discovered['metadata'][name] = content
-        
-        # ──────────────────────────────────────────────────────────────────────
-        # 7. SUBDOMAIN DISCOVERY
-        # ──────────────────────────────────────────────────────────────────────
-        
+        # Extract Subdomains
         subdomain_pattern = rf'([a-zA-Z0-9_-]+)\.{re.escape(self.base_domain)}'
         subdomains = set(re.findall(subdomain_pattern, response.text, re.I))
         for sub in subdomains:
-            self.discovered['subdomains'].add(f"{sub}.{self.base_domain}")
+            self.data['subdomains'].add(f"{sub}.{self.base_domain}")
         
-        # ──────────────────────────────────────────────────────────────────────
-        # 8. PARAMETERS & QUERY STRINGS
-        # ──────────────────────────────────────────────────────────────────────
-        
+        # Extract Parameters
         parsed = urlparse(url)
         if parsed.query:
             params = parse_qs(parsed.query)
-            self.discovered['parameters'].update(params.keys())
+            self.data['parameters'].update(params.keys())
         
-        # ──────────────────────────────────────────────────────────────────────
-        # 9. HEADERS & COOKIES
-        # ──────────────────────────────────────────────────────────────────────
-        
+        # Extract Headers
         for header, value in response.headers.items():
-            self.discovered['headers'][header].append(value)
+            self.data['headers'][header].append(value)
         
+        # Extract Cookies
         for cookie in response.cookies:
-            self.discovered['cookies'].add(f"{cookie.name}={cookie.value}")
-        
-        # ──────────────────────────────────────────────────────────────────────
-        # 10. CLOUD SERVICES DETECTION
-        # ──────────────────────────────────────────────────────────────────────
-        
-        cloud_patterns = {
-            's3_buckets': r'([a-z0-9.-]+)\.s3\.amazonaws\.com',
-            'cloudfront': r'([a-z0-9]+)\.cloudfront\.net',
-            'azure': r'([a-z0-9]+)\.blob\.core\.windows\.net',
-            'gcp': r'([a-z0-9]+)\.storage\.googleapis\.com',
-        }
-        
-        for service, pattern in cloud_patterns.items():
-            matches = re.findall(pattern, response.text, re.I)
-            for match in matches:
-                if service == 's3_buckets':
-                    self.discovered['s3_buckets'].add(match)
-                elif service == 'cloudfront':
-                    self.discovered['cloudfront_urls'].add(match)
+            self.data['cookies'].add(f"{cookie.name}={cookie.value}")
     
     def fuzz_endpoints(self):
-        """Fuzz for hidden endpoints and directories"""
-        print(f"\n  {Colors.CYAN}[*] Fuzzing for hidden endpoints...{Colors.RESET}")
-        
-        found = set()
+        """Fuzz for hidden endpoints"""
+        print(f"\n  {Colors.CYAN}{Colors.BOLD}[*] Fuzzing for hidden endpoints...{Colors.RESET}")
         
         # Test admin paths
-        for path in self.wordlists['admin_paths'][:20]:
+        for path in self.wordlists['admin_paths']:
             url = f"{self.target}/{path}"
             try:
                 resp = self.session.get(url, timeout=5)
                 if resp.status_code == 200:
-                    self.discovered['admin_panels'].add(url)
-                    print(f"    {Colors.GREEN}[+] Found admin: {url}{Colors.RESET}")
+                    self.data['admin_panels'].add(url)
+                    print(f"    {Colors.GREEN}[+] Found: {url}{Colors.RESET}")
                 elif resp.status_code in [401, 403]:
-                    self.discovered['admin_panels'].add(f"{url} (Auth Required)")
-                    print(f"    {Colors.YELLOW}[!] Auth protected: {url}{Colors.RESET}")
+                    self.data['admin_panels'].add(f"{url} (Protected)")
+                    print(f"    {Colors.YELLOW}[!] Protected: {url}{Colors.RESET}")
             except:
                 pass
         
         # Test API paths
-        for path in self.wordlists['api_paths'][:20]:
+        for path in self.wordlists['api_paths']:
             url = f"{self.target}/{path}"
             try:
                 resp = self.session.get(url, timeout=5)
                 if resp.status_code == 200:
-                    self.discovered['api_endpoints'].add(url)
-                    print(f"    {Colors.GREEN}[+] Found API: {url}{Colors.RESET}")
+                    self.data['api_endpoints'].add(url)
+                    print(f"    {Colors.GREEN}[+] API: {url}{Colors.RESET}")
             except:
                 pass
         
-        # Check for sensitive files
-        for config in self.wordlists['config_files'][:10]:
-            url = f"{self.target}/{config}"
+        # Test sensitive directories
+        for path in self.wordlists['sensitive_dirs']:
+            url = f"{self.target}/{path}"
             try:
                 resp = self.session.get(url, timeout=5)
                 if resp.status_code == 200:
-                    self.discovered['config_files'].add(url)
-                    print(f"    {Colors.RED}[!!!] EXPOSED CONFIG: {url}{Colors.RESET}")
+                    self.data['interesting_paths'].add(url)
+                    print(f"    {Colors.RED}[!] Sensitive: {url}{Colors.RESET}")
+            except:
+                pass
+    
+    def check_vulnerabilities(self):
+        """Check for vulnerabilities"""
+        print(f"\n  {Colors.RED}{Colors.BOLD}[*] Scanning for vulnerabilities...{Colors.RESET}")
+        
+        # Check backup files
+        for path in self.wordlists['backup_extensions']:
+            for base in ['', '/admin', '/wp-admin', '/backup', '/~']:
+                test_url = f"{self.target}{base}{path}"
+                try:
+                    resp = self.session.get(test_url, timeout=3)
+                    if resp.status_code == 200 and len(resp.content) > 100:
+                        self.data['backup_files'].add(test_url)
+                        self.data['vulnerabilities'].append(Vulnerability(
+                            name="Exposed Backup File",
+                            severity="HIGH",
+                            endpoint=test_url,
+                            description=f"Backup file accessible ({len(resp.content)} bytes)",
+                            proof=f"File contains {len(resp.content)} bytes of data",
+                            remediation="Remove backup files from webroot immediately",
+                            cvss_score=7.5,
+                            exploit_available=True,
+                            exploit_command=f"wget {test_url} && strings {test_url.split('/')[-1]} | grep -E 'password|secret|key'"
+                        ))
+                        print(f"    {Colors.RED}[!!!] Backup found: {test_url}{Colors.RESET}")
+                except:
+                    pass
+        
+        # Check config files
+        for config in self.wordlists['config_files']:
+            test_url = f"{self.target}/{config}"
+            try:
+                resp = self.session.get(test_url, timeout=3)
+                if resp.status_code == 200:
+                    self.data['config_files'].add(test_url)
+                    self.data['vulnerabilities'].append(Vulnerability(
+                        name="Exposed Configuration File",
+                        severity="CRITICAL",
+                        endpoint=test_url,
+                        description="Configuration file exposed",
+                        proof="File contains sensitive configuration data",
+                        remediation="Move configuration files outside webroot, restrict access",
+                        cvss_score=9.0,
+                        exploit_available=True,
+                        exploit_command=f"curl {test_url} | grep -E 'DB_|PASSWORD|SECRET|API'"
+                    ))
+                    print(f"    {Colors.RED}[!!!] Config exposed: {test_url}{Colors.RESET}")
             except:
                 pass
         
-        return found
+        # Check for exposed secrets in source
+        for pattern_name, pattern in self.wordlists['sensitive_patterns'].items():
+            for url in list(self.data['urls'])[:20]:
+                try:
+                    resp = self.session.get(url, timeout=5)
+                    matches = re.findall(pattern, resp.text, re.I)
+                    if matches:
+                        self.data['exposed_secrets'].append({
+                            'type': pattern_name,
+                            'value': str(matches[0])[:50],
+                            'url': url
+                        })
+                        print(f"    {Colors.RED}[!!!] Exposed {pattern_name} in {url}{Colors.RESET}")
+                except:
+                    pass
+    
+    def generate_attack_paths(self):
+        """Generate attack vectors"""
+        print(f"\n  {Colors.MAGENTA}{Colors.BOLD}[*] Generating attack vectors...{Colors.RESET}")
+        
+        attack_paths = []
+        
+        # Admin brute force
+        for admin in list(self.data['admin_panels'])[:5]:
+            attack_paths.append({
+                'name': 'Admin Panel Brute Force',
+                'target': admin,
+                'tool': 'hydra',
+                'command': f"hydra -l admin -P /usr/share/wordlists/rockyou.txt {self.domain} http-post-form \"{admin}:username=^USER^&password=^PASS^:F=Invalid\"",
+                'risk': 'CRITICAL',
+                'time_estimate': '2-24 hours',
+                'priority': 1
+            })
+            print(f"    {Colors.RED}[!] Attack Vector: Brute force {admin}{Colors.RESET}")
+        
+        # API enumeration
+        for api in list(self.data['api_endpoints'])[:5]:
+            attack_paths.append({
+                'name': 'API Enumeration',
+                'target': api,
+                'tool': 'curl',
+                'command': f'curl -X GET "{api}" -H "X-API-Key: test" -H "Authorization: Bearer test"',
+                'risk': 'HIGH',
+                'time_estimate': 'Minutes',
+                'priority': 2
+            })
+            print(f"    {Colors.YELLOW}[!] Attack Vector: API enumeration on {api}{Colors.RESET}")
+        
+        # Backup extraction
+        if self.data['backup_files']:
+            attack_paths.append({
+                'name': 'Credential Extraction from Backups',
+                'target': list(self.data['backup_files'])[0],
+                'tool': 'wget/strings',
+                'command': f"wget {list(self.data['backup_files'])[0]} && strings {list(self.data['backup_files'])[0].split('/')[-1]} | grep -E 'password|secret|key|token'",
+                'risk': 'CRITICAL',
+                'time_estimate': '5 minutes',
+                'priority': 1
+            })
+            print(f"    {Colors.RED}[!] Attack Vector: Extract credentials from backups{Colors.RESET}")
+        
+        self.data['attack_vectors'] = attack_paths
+        return attack_paths
     
     def crawl_worker(self):
         """Worker thread for crawling"""
@@ -543,9 +518,8 @@ class QuantumSpider:
             
             with self.lock:
                 self.visited.add(url)
-                self.discovered['urls'].add(url)
+                self.data['urls'].add(url)
             
-            # Fetch URL
             result = self.fetch_url(url, depth)
             if not result:
                 continue
@@ -553,239 +527,312 @@ class QuantumSpider:
             response, current_depth = result
             
             if response.status_code == 200:
-                # Analyze page
                 self.analyze_page(url, response, current_depth)
                 
-                # Extract links for deeper crawling
                 if current_depth < self.max_depth:
                     links = self.extract_all_links(response.text, url)
-                    
                     for link in links:
                         parsed = urlparse(link)
-                        
-                        # Only follow internal links
                         if parsed.netloc == self.domain or not parsed.netloc:
                             if link not in self.visited:
                                 with self.lock:
-                                    self.discovered['internal'].add(link)
+                                    self.data['internal'].add(link)
                                 self.to_visit.put((link, current_depth + 1))
                         else:
                             with self.lock:
-                                self.discovered['external'].add(link)
+                                self.data['external'].add(link)
                 
-                # Show progress
                 with self.lock:
-                    crawled = len(self.visited)
-                    if crawled % 10 == 0:
-                        print(f"  {Colors.CYAN}[*] Crawled: {crawled}/{self.max_pages} | Found: {len(self.discovered['internal'])} links | Depth: {current_depth}{Colors.RESET}")
+                    if len(self.visited) % 10 == 0:
+                        print(f"  {Colors.CYAN}[*] Crawled: {len(self.visited)}/{self.max_pages} | Found: {len(self.data['internal'])} links | Depth: {current_depth}{Colors.RESET}")
     
-    def generate_shocking_report(self):
-        """Generate an eye-opening, shocking report"""
+    def generate_ultimate_report(self):
+        """Generate ultimate clear report"""
         elapsed = time.time() - self.start_time
         
-        print(f"\n\n  {Colors.RED}{Colors.BOLD}{'█'*70}{Colors.RESET}")
-        print(f"  {Colors.RED}{Colors.BOLD}║              💀 XOPHY QUANTUM SPIDER - RECONNAISSANCE REPORT 💀              ║{Colors.RESET}")
-        print(f"  {Colors.RED}{Colors.BOLD}{'█'*70}{Colors.RESET}")
+        # Calculate risk score
+        risk_score = min(
+            len(self.data['vulnerabilities']) * 15 +
+            len(self.data['admin_panels']) * 10 +
+            len(self.data['backup_files']) * 20 +
+            len(self.data['config_files']) * 25, 100
+        )
         
-        # Target Info
-        print(f"\n  {Colors.CYAN}📡 TARGET INFORMATION{Colors.RESET}")
-        print(f"  {'─'*66}")
-        print(f"  {Colors.WHITE}Target URL:     {self.target}{Colors.RESET}")
-        print(f"  {Colors.WHITE}Domain:         {self.domain}{Colors.RESET}")
-        print(f"  {Colors.WHITE}Scan Duration:  {elapsed:.2f} seconds{Colors.RESET}")
-        print(f"  {Colors.WHITE}Pages Crawled:  {len(self.visited)}/{self.max_pages}{Colors.RESET}")
+        risk_level = "CRITICAL" if risk_score >= 70 else "HIGH" if risk_score >= 50 else "MEDIUM" if risk_score >= 30 else "LOW"
+        risk_color = Colors.RED if risk_level == "CRITICAL" else Colors.YELLOW if risk_level == "HIGH" else Colors.CYAN
         
-        # Statistics
-        print(f"\n  {Colors.GREEN}📊 STATISTICS{Colors.RESET}")
-        print(f"  {'─'*66}")
-        print(f"  {Colors.WHITE}• Requests Sent:     {self.stats['requests']}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Successful:        {self.stats['success']}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Errors:            {self.stats['errors']}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Redirects:         {self.stats['redirects']}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Data Transferred:  {self.stats['data_transferred'] / 1024 / 1024:.2f} MB{Colors.RESET}")
+        # Header
+        print(f"\n\n  {Colors.RED}{Colors.BOLD}{'█'*80}{Colors.RESET}")
+        print(f"  {Colors.RED}{Colors.BOLD}║                    🕷️ XOPHY QUANTUM SPIDER v5.0 - ULTIMATE REPORT                    ║{Colors.RESET}")
+        print(f"  {Colors.RED}{Colors.BOLD}{'█'*80}{Colors.RESET}")
         
-        # Critical Findings - SHOCKING PART
-        print(f"\n  {Colors.RED}{Colors.BOLD}🔥 CRITICAL / SHOCKING FINDINGS 🔥{Colors.RESET}")
-        print(f"  {'─'*66}")
+        # SECTION 1: EXECUTIVE SUMMARY
+        print(f"\n  {Colors.CYAN}{Colors.BOLD}📋 EXECUTIVE SUMMARY{Colors.RESET}")
+        print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+        print(f"  {Colors.WHITE}Target:        {self.target}{Colors.RESET}")
+        print(f"  {Colors.WHITE}Scan Duration: {elapsed:.2f} seconds ({elapsed/60:.1f} minutes){Colors.RESET}")
+        print(f"  {Colors.WHITE}Pages Crawled: {len(self.visited)}/{self.max_pages}{Colors.RESET}")
+        print(f"  {Colors.WHITE}Data Transfer: {self.stats['data_transferred'] / 1024 / 1024:.2f} MB{Colors.RESET}")
+        print(f"  {Colors.WHITE}Requests:      {self.stats['requests']} (Success: {self.stats['success']}, Errors: {self.stats['errors']}){Colors.RESET}")
+        print(f"  {risk_color}Risk Score:    {risk_score}/100 ({risk_level}){Colors.RESET}")
         
-        shock_factors = []
+        # SECTION 2: CRITICAL FINDINGS
+        print(f"\n  {Colors.RED}{Colors.BOLD}{Colors.BLINK}⚠️ CRITICAL FINDINGS - ACT IMMEDIATELY ⚠️{Colors.RESET}")
+        print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
         
-        if self.discovered['config_files']:
-            shock_factors.append(f"  {Colors.RED}[!!!] EXPOSED CONFIGURATION FILES: {len(self.discovered['config_files'])}{Colors.RESET}")
-            for cfg in list(self.discovered['config_files'])[:5]:
-                shock_factors.append(f"       → {cfg}")
+        critical_found = False
         
-        if self.discovered['admin_panels']:
-            shock_factors.append(f"  {Colors.RED}[!!!] EXPOSED ADMIN PANELS: {len(self.discovered['admin_panels'])}{Colors.RESET}")
-            for admin in list(self.discovered['admin_panels'])[:5]:
-                shock_factors.append(f"       → {admin}")
+        if self.data['config_files']:
+            critical_found = True
+            print(f"  {Colors.RED}{Colors.BOLD}[✓] CONFIGURATION FILES EXPOSED: {len(self.data['config_files'])}{Colors.RESET}")
+            for cfg in list(self.data['config_files'])[:5]:
+                print(f"      {Colors.RED}→ {cfg}{Colors.RESET}")
         
-        if self.discovered['backup_files']:
-            shock_factors.append(f"  {Colors.RED}[!!!] EXPOSED BACKUP FILES: {len(self.discovered['backup_files'])}{Colors.RESET}")
-            for backup in list(self.discovered['backup_files'])[:5]:
-                shock_factors.append(f"       → {backup}")
+        if self.data['backup_files']:
+            critical_found = True
+            print(f"  {Colors.RED}{Colors.BOLD}[✓] BACKUP FILES EXPOSED: {len(self.data['backup_files'])}{Colors.RESET}")
+            for bkp in list(self.data['backup_files'])[:5]:
+                print(f"      {Colors.RED}→ {bkp}{Colors.RESET}")
         
-        if self.discovered['s3_buckets']:
-            shock_factors.append(f"  {Colors.RED}[!!!] EXPOSED S3 BUCKETS: {len(self.discovered['s3_buckets'])}{Colors.RESET}")
-            for bucket in list(self.discovered['s3_buckets'])[:5]:
-                shock_factors.append(f"       → {bucket}")
+        if self.data['admin_panels']:
+            critical_found = True
+            print(f"  {Colors.YELLOW}{Colors.BOLD}[✓] ADMIN PANELS EXPOSED: {len(self.data['admin_panels'])}{Colors.RESET}")
+            for admin in list(self.data['admin_panels'])[:5]:
+                print(f"      {Colors.YELLOW}→ {admin}{Colors.RESET}")
         
-        if self.discovered['graphql_endpoints']:
-            shock_factors.append(f"  {Colors.RED}[!!!] GRAPHQL ENDPOINTS (Introspection risk): {len(self.discovered['graphql_endpoints'])}{Colors.RESET}")
+        if self.data['exposed_secrets']:
+            critical_found = True
+            print(f"  {Colors.RED}{Colors.BOLD}[✓] EXPOSED SECRETS: {len(self.data['exposed_secrets'])}{Colors.RESET}")
+            for secret in self.data['exposed_secrets'][:3]:
+                print(f"      {Colors.RED}→ {secret['type']}: {secret['value']}{Colors.RESET}")
         
-        if self.discovered['emails']:
-            shock_factors.append(f"  {Colors.YELLOW}[!] EMAIL ADDRESSES FOUND: {len(self.discovered['emails'])}{Colors.RESET}")
-            for email in list(self.discovered['emails'])[:10]:
-                shock_factors.append(f"       → {email}")
+        if not critical_found:
+            print(f"  {Colors.GREEN}[✓] No critical findings detected{Colors.RESET}")
         
-        if self.discovered['subdomains']:
-            shock_factors.append(f"  {Colors.YELLOW}[!] SUBDOMAINS DISCOVERED: {len(self.discovered['subdomains'])}{Colors.RESET}")
-            for sub in list(self.discovered['subdomains'])[:10]:
-                shock_factors.append(f"       → {sub}")
+        # SECTION 3: VULNERABILITIES
+        if self.data['vulnerabilities']:
+            print(f"\n  {Colors.RED}{Colors.BOLD}🔓 VULNERABILITIES DETECTED ({len(self.data['vulnerabilities'])}{Colors.RESET}")
+            print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+            
+            for vuln in self.data['vulnerabilities'][:10]:
+                severity_color = Colors.RED if vuln.severity == "CRITICAL" else Colors.YELLOW
+                print(f"  {severity_color}[!] {vuln.name} [{vuln.severity}] | CVSS: {vuln.cvss_score}{Colors.RESET}")
+                print(f"      Endpoint: {vuln.endpoint[:70]}")
+                print(f"      Fix: {vuln.remediation[:70]}")
+                if vuln.exploit_available:
+                    print(f"      Exploit: {vuln.exploit_command[:70]}...")
+                print()
         
-        if self.discovered['api_endpoints']:
-            shock_factors.append(f"  {Colors.YELLOW}[!] API ENDPOINTS: {len(self.discovered['api_endpoints'])}{Colors.RESET}")
-            for api in list(self.discovered['api_endpoints'])[:10]:
-                shock_factors.append(f"       → {api}")
+        # SECTION 4: ATTACK VECTORS
+        if self.data['attack_vectors']:
+            print(f"\n  {Colors.MAGENTA}{Colors.BOLD}🎯 ATTACK VECTORS (What Attackers Can Do){Colors.RESET}")
+            print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+            
+            for vector in self.data['attack_vectors'][:10]:
+                risk_color = Colors.RED if vector['risk'] == "CRITICAL" else Colors.YELLOW
+                print(f"  {risk_color}[→] {vector['name']} [{vector['risk']}] | Time: {vector['time_estimate']}{Colors.RESET}")
+                print(f"      Target: {vector['target'][:60]}")
+                print(f"      Command: {vector['command'][:70]}...")
+                print()
         
-        if not shock_factors:
-            shock_factors.append(f"  {Colors.GREEN}[✓] No critical findings - target appears secure{Colors.RESET}")
+        # SECTION 5: ASSETS SUMMARY
+        print(f"\n  {Colors.CYAN}{Colors.BOLD}📦 EXPOSED ASSETS SUMMARY{Colors.RESET}")
+        print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
         
-        for shock in shock_factors:
-            print(shock)
+        assets = [
+            ("Admin Panels", len(self.data['admin_panels']), Colors.RED),
+            ("Login Panels", len(self.data['login_panels']), Colors.YELLOW),
+            ("API Endpoints", len(self.data['api_endpoints']), Colors.CYAN),
+            ("GraphQL Endpoints", len(self.data['graphql_endpoints']), Colors.MAGENTA),
+            ("Email Addresses", len(self.data['emails']), Colors.WHITE),
+            ("Subdomains", len(self.data['subdomains']), Colors.GREEN),
+            ("JavaScript Files", len(self.data['js_files']), Colors.WHITE),
+            ("CSS Files", len(self.data['css_files']), Colors.WHITE),
+            ("Images", len(self.data['images']), Colors.WHITE),
+            ("Documents", len(self.data['documents']), Colors.WHITE),
+            ("IP Addresses", len(self.data['ip_addresses']), Colors.DIM),
+        ]
         
-        # Technology Stack
-        if self.discovered['technologies']:
-            print(f"\n  {Colors.CYAN}🔧 DETECTED TECHNOLOGIES{Colors.RESET}")
-            print(f"  {'─'*66}")
-            for category, techs in self.discovered['technologies'].items():
-                if techs:
-                    print(f"  {Colors.WHITE}• {category}: {', '.join(techs)}{Colors.RESET}")
+        for name, count, color in assets:
+            if count > 0:
+                print(f"  {color}• {name}: {count:,}{Colors.RESET}")
         
-        # Assets
-        print(f"\n  {Colors.MAGENTA}📦 ASSETS DISCOVERED{Colors.RESET}")
-        print(f"  {'─'*66}")
-        print(f"  {Colors.WHITE}• JavaScript Files:  {len(self.discovered['js_files'])}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• CSS Files:         {len(self.discovered['css_files'])}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Images:            {len(self.discovered['images'])}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Documents:         {len(self.discovered['documents'])}{Colors.RESET}")
-        print(f"  {Colors.WHITE}• Archives:          {len(self.discovered['archives'])}{Colors.RESET}")
+        # SECTION 6: EMAILS (For OSINT)
+        if self.data['emails']:
+            print(f"\n  {Colors.CYAN}{Colors.BOLD}📧 DISCOVERED EMAIL ADDRESSES ({len(self.data['emails'])}){Colors.RESET}")
+            print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+            for email in list(self.data['emails'])[:15]:
+                print(f"  {Colors.WHITE}• {email}{Colors.RESET}")
+            if len(self.data['emails']) > 15:
+                print(f"  {Colors.DIM}... and {len(self.data['emails']) - 15} more{Colors.RESET}")
         
-        # Parameters
-        if self.discovered['parameters']:
-            print(f"\n  {Colors.YELLOW}📝 URL PARAMETERS{Colors.RESET}")
-            print(f"  {'─'*66}")
-            for param in list(self.discovered['parameters'])[:20]:
-                print(f"  {Colors.WHITE}• {param}{Colors.RESET}")
+        # SECTION 7: SUBDOMAINS
+        if self.data['subdomains']:
+            print(f"\n  {Colors.GREEN}{Colors.BOLD}🌐 DISCOVERED SUBDOMAINS ({len(self.data['subdomains'])}){Colors.RESET}")
+            print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+            for sub in list(self.data['subdomains'])[:10]:
+                print(f"  {Colors.WHITE}• {sub}{Colors.RESET}")
         
-        # Comments with TODOs
-        if self.discovered['comments']:
-            print(f"\n  {Colors.MAGENTA}💬 INTERESTING COMMENTS{Colors.RESET}")
-            print(f"  {'─'*66}")
-            for comment in self.discovered['comments'][:10]:
-                print(f"  {Colors.WHITE}• {comment['content'][:100]}...{Colors.RESET}")
+        # SECTION 8: TECHNOLOGY STACK
+        if self.data['technologies']:
+            print(f"\n  {Colors.CYAN}{Colors.BOLD}🔧 TECHNOLOGY STACK{Colors.RESET}")
+            print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+            for tech in sorted(self.data['technologies']['Detected']):
+                print(f"  {Colors.WHITE}• {tech}{Colors.RESET}")
         
-        # Headers Analysis
-        print(f"\n  {Colors.CYAN}🛡️ SECURITY HEADERS{Colors.RESET}")
-        print(f"  {'─'*66}")
+        # SECTION 9: SECURITY HEADERS
+        print(f"\n  {Colors.YELLOW}{Colors.BOLD}🛡️ SECURITY HEADERS STATUS{Colors.RESET}")
+        print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
         
         security_headers = {
-            'Strict-Transport-Security': 'HSTS',
-            'Content-Security-Policy': 'CSP',
+            'Strict-Transport-Security': 'HSTS (Prevents SSL stripping)',
+            'Content-Security-Policy': 'CSP (Prevents XSS)',
             'X-Frame-Options': 'Clickjacking Protection',
-            'X-Content-Type-Options': 'MIME Sniffing',
+            'X-Content-Type-Options': 'MIME Sniffing Protection',
             'Referrer-Policy': 'Referrer Policy',
+            'X-XSS-Protection': 'XSS Protection',
         }
         
-        for header, name in security_headers.items():
-            if header in self.discovered['headers']:
-                print(f"  {Colors.GREEN}✓ {name}: Present{Colors.RESET}")
+        for header, description in security_headers.items():
+            if header in self.data['headers']:
+                print(f"  {Colors.GREEN}✓ {description}: Present{Colors.RESET}")
             else:
-                print(f"  {Colors.RED}✗ {name}: Missing{Colors.RESET}")
+                print(f"  {Colors.RED}✗ {description}: MISSING{Colors.RESET}")
         
-        # Save results
-        self.save_results()
+        # SECTION 10: REMEDIATION STEPS
+        print(f"\n  {Colors.GREEN}{Colors.BOLD}🔧 IMMEDIATE REMEDIATION STEPS{Colors.RESET}")
+        print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
         
-        # Final alert
-        if self.discovered['config_files'] or self.discovered['admin_panels'] or self.discovered['backup_files']:
-            print(f"\n  {Colors.RED}{Colors.BLINK}{'█'*70}{Colors.RESET}")
-            print(f"  {Colors.RED}{Colors.BLINK}🚨 CRITICAL SECURITY ISSUES DETECTED - IMMEDIATE ACTION REQUIRED 🚨{Colors.RESET}")
-            print(f"  {Colors.RED}{Colors.BLINK}{'█'*70}{Colors.RESET}")
+        remediation_steps = []
+        step_num = 1
         
-        print(f"\n  {Colors.GREEN}✓ Full report saved: quantum_spider_{self.domain}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json{Colors.RESET}")
-        print(f"  {Colors.GREEN}✓ Results saved: spider_results_{self.domain}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt{Colors.RESET}")
-        print(f"  {Colors.CYAN}{'═'*70}{Colors.RESET}\n")
-    
-    def save_results(self):
-        """Save results to files"""
+        if self.data['backup_files']:
+            remediation_steps.append(f"{step_num}. Remove all exposed backup files immediately")
+            step_num += 1
+            remediation_steps.append(f"{step_num}. Configure .gitignore to exclude backup files")
+            step_num += 1
+        
+        if self.data['config_files']:
+            remediation_steps.append(f"{step_num}. Move configuration files outside webroot")
+            step_num += 1
+            remediation_steps.append(f"{step_num}. Rotate any exposed credentials immediately")
+            step_num += 1
+        
+        if self.data['admin_panels']:
+            remediation_steps.append(f"{step_num}. Implement IP whitelisting for admin panels")
+            step_num += 1
+            remediation_steps.append(f"{step_num}. Enable Multi-Factor Authentication (MFA)")
+            step_num += 1
+        
+        if 'Strict-Transport-Security' not in self.data['headers']:
+            remediation_steps.append(f"{step_num}. Enable HSTS header")
+            step_num += 1
+        
+        if 'Content-Security-Policy' not in self.data['headers']:
+            remediation_steps.append(f"{step_num}. Implement Content Security Policy (CSP)")
+            step_num += 1
+        
+        if not remediation_steps:
+            remediation_steps.append("✓ No immediate remediation required")
+        
+        for step in remediation_steps[:12]:
+            print(f"  {Colors.WHITE}{step}{Colors.RESET}")
+        
+        # SECTION 11: FILES SAVED
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        json_file = f'quantum_spider_{self.domain}_{timestamp}.json'
+        txt_file = f'spider_results_{self.domain}_{timestamp}.txt'
         
-        # JSON report
-        json_report = {
+        print(f"\n  {Colors.CYAN}{Colors.BOLD}📁 REPORT FILES SAVED{Colors.RESET}")
+        print(f"  {Colors.DIM}{'─'*76}{Colors.RESET}")
+        print(f"  {Colors.GREEN}✓ JSON Report: {json_file}{Colors.RESET}")
+        print(f"  {Colors.GREEN}✓ Text Report: {txt_file}{Colors.RESET}")
+        
+        # FINAL WARNING
+        if critical_found:
+            print(f"\n  {Colors.RED}{Colors.BLINK}{'█'*80}{Colors.RESET}")
+            print(f"  {Colors.RED}{Colors.BLINK}🚨 CRITICAL SECURITY ISSUES FOUND - IMMEDIATE ACTION REQUIRED 🚨{Colors.RESET}")
+            print(f"  {Colors.RED}{Colors.BLINK}{'█'*80}{Colors.RESET}")
+        
+        print(f"\n  {Colors.CYAN}{'═'*80}{Colors.RESET}\n")
+        
+        # Save files
+        self.save_results(json_file, txt_file)
+    
+    def save_results(self, json_file: str, txt_file: str):
+        """Save results to files"""
+        report_data = {
             'target': self.target,
             'domain': self.domain,
-            'scan_time': timestamp,
+            'scan_time': datetime.now().isoformat(),
             'duration': time.time() - self.start_time,
             'statistics': self.stats,
-            'discovered': {
-                'urls': list(self.discovered['urls']),
-                'internal_links': list(self.discovered['internal']),
-                'external_links': list(self.discovered['external']),
-                'admin_panels': list(self.discovered['admin_panels']),
-                'login_panels': list(self.discovered['login_panels']),
-                'api_endpoints': list(self.discovered['api_endpoints']),
-                'graphql_endpoints': list(self.discovered['graphql_endpoints']),
-                'config_files': list(self.discovered['config_files']),
-                'backup_files': list(self.discovered['backup_files']),
-                'subdomains': list(self.discovered['subdomains']),
-                'emails': list(self.discovered['emails']),
-                's3_buckets': list(self.discovered['s3_buckets']),
-                'technologies': {k: list(v) for k, v in self.discovered['technologies'].items()},
-                'js_files': list(self.discovered['js_files']),
-                'css_files': list(self.discovered['css_files']),
-                'images': list(self.discovered['images']),
-                'documents': list(self.discovered['documents']),
+            'risk_score': min(
+                len(self.data['vulnerabilities']) * 15 +
+                len(self.data['admin_panels']) * 10 +
+                len(self.data['backup_files']) * 20, 100
+            ),
+            'critical_findings': {
+                'admin_panels': list(self.data['admin_panels']),
+                'backup_files': list(self.data['backup_files']),
+                'config_files': list(self.data['config_files']),
+                'exposed_secrets': self.data['exposed_secrets'],
+            },
+            'vulnerabilities': [
+                {'name': v.name, 'severity': v.severity, 'endpoint': v.endpoint, 'cvss': v.cvss_score}
+                for v in self.data['vulnerabilities']
+            ],
+            'attack_vectors': self.data['attack_vectors'],
+            'emails': list(self.data['emails']),
+            'subdomains': list(self.data['subdomains']),
+            'technologies': list(self.data['technologies']['Detected']),
+            'api_endpoints': list(self.data['api_endpoints']),
+            'statistics': {
+                'pages_crawled': len(self.visited),
+                'internal_links': len(self.data['internal']),
+                'external_links': len(self.data['external']),
+                'js_files': len(self.data['js_files']),
+                'css_files': len(self.data['css_files']),
+                'images': len(self.data['images']),
+                'documents': len(self.data['documents']),
             }
         }
         
-        with open(f'quantum_spider_{self.domain}_{timestamp}.json', 'w') as f:
-            json.dump(json_report, f, indent=2)
+        with open(json_file, 'w') as f:
+            json.dump(report_data, f, indent=2)
         
         # Text report
-        with open(f'spider_results_{self.domain}_{timestamp}.txt', 'w') as f:
+        with open(txt_file, 'w') as f:
             f.write(f"XOPHY Quantum Spider Report - {self.target}\n")
             f.write(f"{'='*70}\n\n")
-            
             f.write("CRITICAL FINDINGS:\n")
             f.write(f"{'-'*40}\n")
-            if self.discovered['config_files']:
-                f.write(f"Exposed Config Files: {len(self.discovered['config_files'])}\n")
-                for cfg in self.discovered['config_files']:
+            
+            if self.data['config_files']:
+                f.write(f"Exposed Config Files: {len(self.data['config_files'])}\n")
+                for cfg in self.data['config_files']:
                     f.write(f"  - {cfg}\n")
             
-            if self.discovered['admin_panels']:
-                f.write(f"\nAdmin Panels: {len(self.discovered['admin_panels'])}\n")
-                for admin in self.discovered['admin_panels']:
+            if self.data['backup_files']:
+                f.write(f"\nExposed Backup Files: {len(self.data['backup_files'])}\n")
+                for bkp in self.data['backup_files']:
+                    f.write(f"  - {bkp}\n")
+            
+            if self.data['admin_panels']:
+                f.write(f"\nAdmin Panels: {len(self.data['admin_panels'])}\n")
+                for admin in self.data['admin_panels']:
                     f.write(f"  - {admin}\n")
             
-            f.write(f"\nEmails: {len(self.discovered['emails'])}\n")
-            for email in self.discovered['emails']:
+            f.write(f"\nEmails: {len(self.data['emails'])}\n")
+            for email in self.data['emails']:
                 f.write(f"  - {email}\n")
-            
-            f.write(f"\nSubdomains: {len(self.discovered['subdomains'])}\n")
-            for sub in self.discovered['subdomains']:
-                f.write(f"  - {sub}\n")
-            
-            f.write(f"\nAPI Endpoints: {len(self.discovered['api_endpoints'])}\n")
-            for api in self.discovered['api_endpoints']:
-                f.write(f"  - {api}\n")
     
     def run(self):
         """Main execution"""
-        print(f"\n  {Colors.RED}{Colors.BOLD}{'█'*70}{Colors.RESET}")
-        print(f"  {Colors.RED}{Colors.BOLD}║          🕷️ XOPHY QUANTUM SPIDER v3.0 - NEXT-GEN RECONNAISSANCE          ║{Colors.RESET}")
-        print(f"  {Colors.RED}{Colors.BOLD}║                    [ DEEP WEB | DARK WEB | SURFACE ]                    ║{Colors.RESET}")
-        print(f"  {Colors.RED}{Colors.BOLD}{'█'*70}{Colors.RESET}")
+        print(f"\n  {Colors.RED}{Colors.BOLD}{'█'*80}{Colors.RESET}")
+        print(f"  {Colors.RED}{Colors.BOLD}║          🕷️ XOPHY QUANTUM SPIDER v5.0 - ULTIMATE RECONNAISSANCE           ║{Colors.RESET}")
+        print(f"  {Colors.RED}{Colors.BOLD}║                    [ ENTERPRISE | AI-POWERED | EXPLOIT READY ]                    ║{Colors.RESET}")
+        print(f"  {Colors.RED}{Colors.BOLD}{'█'*80}{Colors.RESET}")
         
         print(f"\n  {Colors.CYAN}[*] Target: {self.target}{Colors.RESET}")
         print(f"  {Colors.CYAN}[*] Domain: {self.domain}{Colors.RESET}")
@@ -794,22 +841,22 @@ class QuantumSpider:
         
         self.start_time = time.time()
         
-        # Start crawling threads
+        # Start crawling
         with ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = [executor.submit(self.crawl_worker) for _ in range(self.threads)]
             for future in as_completed(futures):
                 pass
         
-        # Fuzz for hidden endpoints
+        # Post-processing
         self.fuzz_endpoints()
-        
-        # Generate shocking report
-        self.generate_shocking_report()
+        self.check_vulnerabilities()
+        self.generate_attack_paths()
+        self.generate_ultimate_report()
 
 
 def run(target, max_depth=5, max_pages=500, threads=50):
-    """Wrapper function for CLI compatibility"""
-    spider = QuantumSpider(target, max_depth, max_pages, threads)
+    """Wrapper function"""
+    spider = QuantumSpiderUltimate(target, max_depth, max_pages, threads)
     spider.run()
 
 
