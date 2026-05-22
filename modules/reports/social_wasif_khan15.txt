@@ -1,0 +1,13 @@
+XOPHY Scan Report - 2026-05-07 14:19:34
+============================================================
+
+{'platform': 'Twitter/X', 'url': 'https://twitter.com/wasif_khan15', 'status': 200}
+{'platform': 'Instagram', 'url': 'https://instagram.com/wasif_khan15', 'status': 200}
+{'platform': 'Reddit', 'url': 'https://reddit.com/user/wasif_khan15', 'status': 200}
+{'platform': 'Facebook', 'url': 'https://facebook.com/wasif_khan15', 'status': 200}
+{'platform': 'TikTok', 'url': 'https://tiktok.com/@wasif_khan15', 'status': 200}
+{'platform': 'Pinterest', 'url': 'https://pinterest.com/wasif_khan15', 'status': 200}
+{'platform': 'Snapchat', 'url': 'https://snapchat.com/add/wasif_khan15', 'status': 200}
+{'platform': 'Twitch', 'url': 'https://twitch.tv/wasif_khan15', 'status': 200}
+{'platform': 'Discord', 'url': 'https://discord.com/users/wasif_khan15', 'status': 200}
+{'platform': 'Steam', 'url': 'https://steamcommunity.com/id/wasif_khan15', 'status': 200}

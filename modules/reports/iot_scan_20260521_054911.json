@@ -1,0 +1,10 @@
+[
+  {
+    "ip": "10.0.2.3",
+    "mac": "52:55:0a:00:02:03",
+    "vendor": "VirtualBox",
+    "device_type": "Virtual Machine",
+    "risk_level": "LOW",
+    "ports": []
+  }
+]

@@ -1,0 +1,10 @@
+{
+    "domain": "case.edu.pk",
+    "ip": "203.124.44.47",
+    "risk_level": "LOW",
+    "open_ports": [],
+    "services": [],
+    "vulnerabilities": [],
+    "organization": null,
+    "os": null
+}

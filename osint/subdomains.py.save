@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+
+import os
+import dns.resolver
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# =========================
+# CONFIG
+# =========================
+WORDLIST = "wordlists/subdomains.txt"   # adjust path if needed
+THREADS = 50
+TIMEOUT = 2.0
+
+
+# =========================
+# DNS Resolver
+# =========================
+def resolve_subdomain(subdomain):
+    try:
+        dns.resolver.resolve(subdomain, "A", lifetime=TIMEOUT)
+        return subdomain
+    except Exception:
+        return None
+
+
+# =========================
+# Output Formatter
+# =========================
+def print_subdomains(subdomains):
+    print("=" * 40)
+    print("[ Subdomain Enumeration ]")
+    print("=" * 40)
+    print(f"Total Subdomains Found : {len(subdomains)}\n")
+
+    for sub in subdomains:
+        print(f"[+] {sub}")
+
+
+# =========================
+# Main Runner (XOPHY Mode)
+# =========================
+def run(domain, silent=False):
+    """
+    silent = False  -> print results (Option 5)
+    silent = True   -> return data only (Option 6 / profiler)
+    """
+
+    if not os.path.exists(WORDLIST):
+        if not silent:
+            print("[-] Wordlist not found.")
+        return []
+
+    # Build candidate subdomains
+    with open(WORDLIST, "r") as f:
+        subs = [f"{line.strip()}.{domain}" for line in f if line.strip()]
+
+    found = []
+
+    # Multi-threaded DNS resolution
+    with ThreadPoolExecutor(max_workers=THREADS) as executor:
+  GNU nano 8.7                                             /home/kali/Desktop/xophy/osint/subdomains.py                                                      
+#!/usr/bin/env python3
+
+import os
+import dns.resolver
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+# =========================
+# CONFIG
+# =========================
+WORDLIST = "wordlists/subdomains.txt"   # adjust path if needed
+THREADS = 50
+TIMEOUT = 2.0
+
+
+# =========================
+# DNS Resolver
+# =========================
+def resolve_subdomain(subdomain):
+    try:
+        dns.resolver.resolve(subdomain, "A", lifetime=TIMEOUT)
+        return subdomain
+    except Exception:
+        return None
+
+
+# =========================
+# Output Formatter
+# =========================
+def print_subdomains(subdomains):
+    print("=" * 40)
+    print("[ Subdomain Enumeration ]")
+        futures = [executor.submit(resolve_subdomain, s) for s in subs]
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                found.append(result)
+
+    # Remove duplicates & sort
+    found = sorted(set(found))
+
+    # Print only if NOT silent
+    if found and not silent:
+        print_subdomains(found)
+
+    return found

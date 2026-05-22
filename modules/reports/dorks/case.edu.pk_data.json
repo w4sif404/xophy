@@ -1,0 +1,56 @@
+{
+    "target": "case.edu.pk",
+    "date": "2026-05-03_14-56",
+    "findings": {
+        "Google": [
+            {
+                "query": "site:case.edu.pk intitle:\"index of\"",
+                "url": "https://www.google.com/search?q=site:case.edu.pk+intitle:%22index+of%22"
+            },
+            {
+                "query": "site:case.edu.pk ext:env OR ext:log OR ext:sql",
+                "url": "https://www.google.com/search?q=site:case.edu.pk+ext:env+OR+ext:log+OR+ext:sql"
+            },
+            {
+                "query": "site:case.edu.pk inurl:admin OR inurl:login",
+                "url": "https://www.google.com/search?q=site:case.edu.pk+inurl:admin+OR+inurl:login"
+            },
+            {
+                "query": "site:case.edu.pk \"DB_PASSWORD\" OR \"API_KEY\"",
+                "url": "https://www.google.com/search?q=site:case.edu.pk+%22DB_PASSWORD%22+OR+%22API_KEY%22"
+            }
+        ],
+        "GitHub": [
+            {
+                "query": "\"case.edu.pk\" password",
+                "url": "https://github.com/search?type=code&q=%22case.edu.pk%22+password"
+            },
+            {
+                "query": "\"case.edu.pk\" access_key",
+                "url": "https://github.com/search?type=code&q=%22case.edu.pk%22+access_key"
+            },
+            {
+                "query": "\"case.edu.pk\" config",
+                "url": "https://github.com/search?type=code&q=%22case.edu.pk%22+config"
+            },
+            {
+                "query": "\"case.edu.pk\" secret",
+                "url": "https://github.com/search?type=code&q=%22case.edu.pk%22+secret"
+            }
+        ],
+        "Shodan": [
+            {
+                "query": "hostname:\"case.edu.pk\"",
+                "url": "https://www.shodan.io/search?query=hostname:%22case.edu.pk%22"
+            },
+            {
+                "query": "org:\"case.edu.pk\"",
+                "url": "https://www.shodan.io/search?query=org:%22case.edu.pk%22"
+            },
+            {
+                "query": "ssl:\"case.edu.pk\"",
+                "url": "https://www.shodan.io/search?query=ssl:%22case.edu.pk%22"
+            }
+        ]
+    }
+}

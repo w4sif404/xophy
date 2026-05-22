@@ -1,0 +1,30 @@
+DORK-O-MATIC REPORT: case.edu.pk
+========================================
+
+[Google]
+- site:case.edu.pk intitle:"index of"
+  URL: https://www.google.com/search?q=site:case.edu.pk+intitle:%22index+of%22
+- site:case.edu.pk ext:env OR ext:log OR ext:sql
+  URL: https://www.google.com/search?q=site:case.edu.pk+ext:env+OR+ext:log+OR+ext:sql
+- site:case.edu.pk inurl:admin OR inurl:login
+  URL: https://www.google.com/search?q=site:case.edu.pk+inurl:admin+OR+inurl:login
+- site:case.edu.pk "DB_PASSWORD" OR "API_KEY"
+  URL: https://www.google.com/search?q=site:case.edu.pk+%22DB_PASSWORD%22+OR+%22API_KEY%22
+
+[GitHub]
+- "case.edu.pk" password
+  URL: https://github.com/search?type=code&q=%22case.edu.pk%22+password
+- "case.edu.pk" access_key
+  URL: https://github.com/search?type=code&q=%22case.edu.pk%22+access_key
+- "case.edu.pk" config
+  URL: https://github.com/search?type=code&q=%22case.edu.pk%22+config
+- "case.edu.pk" secret
+  URL: https://github.com/search?type=code&q=%22case.edu.pk%22+secret
+
+[Shodan]
+- hostname:"case.edu.pk"
+  URL: https://www.shodan.io/search?query=hostname:%22case.edu.pk%22
+- org:"case.edu.pk"
+  URL: https://www.shodan.io/search?query=org:%22case.edu.pk%22
+- ssl:"case.edu.pk"
+  URL: https://www.shodan.io/search?query=ssl:%22case.edu.pk%22

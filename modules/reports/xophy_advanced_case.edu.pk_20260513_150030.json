@@ -1,0 +1,121 @@
+{
+  "zero_day_suspects": [
+    {
+      "type": "Weird HTTP Method Accepted",
+      "method": "TRACK",
+      "risk": "HIGH",
+      "detail": "Server accepts TRACK method - possible misconfiguration"
+    },
+    {
+      "type": "Weird HTTP Method Accepted",
+      "method": "DEBUG",
+      "risk": "HIGH",
+      "detail": "Server accepts DEBUG method - possible misconfiguration"
+    },
+    {
+      "type": "Weird HTTP Method Accepted",
+      "method": "TEST",
+      "risk": "HIGH",
+      "detail": "Server accepts TEST method - possible misconfiguration"
+    },
+    {
+      "type": "Weird HTTP Method Accepted",
+      "method": "HELLO",
+      "risk": "HIGH",
+      "detail": "Server accepts HELLO method - possible misconfiguration"
+    },
+    {
+      "type": "Error-Based Leak",
+      "payload": "%00",
+      "risk": "HIGH",
+      "detail": "Error messages reveal internal paths"
+    }
+  ],
+  "hidden_endpoints": [
+    {
+      "path": "/cpanel",
+      "status": 200,
+      "size": 37447
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "size": 115
+    },
+    {
+      "path": "/admin",
+      "status": 200,
+      "size": 287916
+    },
+    {
+      "path": "/cp",
+      "status": 200,
+      "size": 391206
+    },
+    {
+      "path": "/wp-admin",
+      "status": 200,
+      "size": 1049471
+    },
+    {
+      "path": "/test",
+      "status": 200,
+      "size": 306124
+    }
+  ],
+  "logic_bugs": [
+    {
+      "type": "No Rate Limiting",
+      "risk": "MEDIUM",
+      "detail": "10 rapid requests all successful - vulnerable to brute force"
+    },
+    {
+      "type": "HTTP Method Override",
+      "header": "X-HTTP-Method-Override",
+      "method": "PUT",
+      "risk": "MEDIUM",
+      "detail": "Can override HTTP methods"
+    },
+    {
+      "type": "HTTP Method Override",
+      "header": "X-HTTP-Method",
+      "method": "DELETE",
+      "risk": "MEDIUM",
+      "detail": "Can override HTTP methods"
+    },
+    {
+      "type": "HTTP Method Override",
+      "header": "X-Method-Override",
+      "method": "PATCH",
+      "risk": "MEDIUM",
+      "detail": "Can override HTTP methods"
+    }
+  ],
+  "waf_bypasses": [
+    {
+      "technique": "SQLi comment bypass",
+      "payload": "SELECT/**/password/**/FROM/**/users",
+      "success": true,
+      "detail": "Payload executed successfully"
+    },
+    {
+      "technique": "XSS double encoded",
+      "payload": "%253Cscript%253Ealert(1)%253C/script%253E",
+      "success": true,
+      "detail": "Payload executed successfully"
+    },
+    {
+      "technique": "Double URL encode",
+      "payload": "%252e%252e%252f",
+      "success": true,
+      "detail": "Payload executed successfully"
+    }
+  ],
+  "leaked_secrets": [],
+  "backdoors": [],
+  "misconfigurations": [
+    "Backup file exposed: /admin~",
+    "Backup file exposed: /cp~",
+    "Backup file exposed: /test~"
+  ]
+}
