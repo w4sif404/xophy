@@ -1,12 +1,12 @@
 # XOPHY 🔍
 
-![Xophy Banner](screenshot/banner.PNG)
+![Xophy Banner](banner.PNG)
 
 ## Advanced OSINT & Infrastructure Intelligence Tool
 XOPHY is a next-generation reconnaissance framework designed for **ethical OSINT, infrastructure analysis, and security research**.
 
 ### Interface Preview
-![Xophy Main UI](screenshot/main.PNG)
+![Xophy Main UI](main.PNG)
 
 ---
 
@@ -27,11 +27,13 @@ XOPHY is a next-generation reconnaissance framework designed for **ethical OSINT
 * **IoT Discovery:** Locate connected devices and industrial assets.
 * **Watchtower (Live):** Real-time monitoring of target infrastructure.
 
+---
+
 ## 📦 Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/w4sif404/xophy.git
+git clone [https://github.com/w4sif404/xophy.git](https://github.com/w4sif404/xophy.git)
 
 # Enter the directory
 cd xophy
