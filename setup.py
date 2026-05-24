@@ -9,35 +9,16 @@ setup(
     include_package_data=True,
     python_requires=">=3.8",
     install_requires=[
-        "colorama",
+        "requests",
+        "beautifulsoup4",
         "python-whois",
         "dnspython",
-        "requests",
-        "shodan",
-        "pillow",
-        "pyOpenSSL",
-        "beautifulsoup4",
-        "rich",
-        "aiohttp",
-        "selenium",
-        "lxml",
-        "tldextract",
-        "phonenumbers",
-        "psutil",
-        "pycountry",
-        "geopy",
-        "maigret",
-        "stem",
-        "cloudscraper",
         "reportlab",
-        "xlsxwriter",
-        "python-dotenv",
-        "httpx",
-        "dnspython",
+        "aiohttp",
+        "aiodns",
+        "cryptography",
+        "pillow",
+        "shodan",
+        "urllib3",
     ],
-    entry_points={
-        "console_scripts": [
-            "xophy=core.cli:main"
-        ]
-    }
 )
