@@ -9,3 +9,7 @@ cryptography
 pillow
 shodan
 urllib3
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+cloudscraper>=1.2.71
+fake-useragent>=1.4.0
