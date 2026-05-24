@@ -1,59 +1,59 @@
-```markdown
-# XOPHY Framework
+# 🔍 XOPHY Framework v3.0
 
 <p align="center">
   <img src="banner.PNG" alt="XOPHY Banner" width="100%">
 </p>
 
 <p align="center">
-  <b>Multi-threaded intelligence gathering, infrastructure mapping, and target profiling engine.</b>
+  <strong>Next-Generation Open-Source Intelligence (OSINT) & Infrastructure Reconnaissance Engine</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Release-v3.0-000000?style=flat" alt="Version">
-  <img src="https://img.shields.io/badge/Runtime-Python_3-000000?style=flat" alt="Python">
-  <img src="https://img.shields.io/badge/Platform-Linux_/_MacOS-000000?style=flat" alt="OS">
+  <img src="https://img.shields.io/badge/Version-3.0_Stable-00ff66?style=flat-square&logo=github&logoColor=white" alt="Version">
+  <img src="https://img.shields.io/badge/Language-Python_3.x-007acc?style=flat-square&logo=python&logoColor=white" alt="Language">
+  <img src="https://img.shields.io/badge/Environment-Linux_/_Kali-black?style=flat-square&logo=kali-linux&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/License-MIT-red?style=flat-square" alt="License">
 </p>
 
 ---
 
-## Key Capabilities
+## ⚡ Overview
 
-XOPHY is built from the ground up to solve complex reconnaissance tasks efficiently. By running multi-threaded network scanners alongside automated web-mining scripts, it reduces a red-team's initial footprinting time from hours to minutes.
+XOPHY is an advanced, multi-threaded intelligence gathering and tactical reconnaissance framework built from scratch. Engineered for red teamers, penetration testers, and security researchers, it automates deep-dive information gathering across target networks, code repositories, web applications, and social footprints while implementing robust evasion and stealth controls.
 
-### Command Center Preview
+### 🖥️ Interface Preview
 <p align="center">
-  <img src="main.PNG" alt="Xophy Main UI" width="90%">
+  <img src="main.PNG" alt="Xophy Main UI" width="90%" style="border: 2px solid #00ff66; border-radius: 5px;">
 </p>
 
 ---
 
-## Architectural Breakdown
+## 🚀 Core Modules & Capabilities
 
-### 1. Infrastructure Reconnaissance
-* **Tech-Stack & CVE Integration** — Audits web banners and extracts asset dependencies to map active software vulnerabilities.
-* **DNS Profile Mapping** — Automatically interrogates host name nodes for deep `MX`, `TXT`, and `A` records.
-* **SSL/TLS Diagnostics** — Deep-parses cryptographic handshake rules to evaluate overall security compliance.
-
-### 2. Asset & Web Mining
-* **DORK-o-Matic Pipeline** — Runs automated query blocks across search indexes to locate exposed configuration logs and indices.
-* **Subdomain Enumeration** — Sweeps third-party records to identify hidden sub-assets and dangling CNAME redirects.
-* **Social Footprint Recon** — Queries user profiles across 50+ unique platforms simultaneously using safe dynamic runtime fallbacks.
-
-### 3. Intelligence Feeds
-* **Ransom-Watch** — Monitors threat actor leak pages and updates an interactive active threat matrix.
-* **IoT Discovery** — Leverages open asset indices to locate public-facing operational machinery and unauthenticated setups.
-* **Watchtower Daemon** — Provides continuous real-time changes regarding target infrastructure health.
+| Module Category | Feature Sub-Systems | Technical Capabilities |
+| :--- | :--- | :--- |
+| **01 🌐 Infrastructure Recon** | Tech-Stack & CVE <br> DNS Enumeration <br> SSL/TLS Advanced | • Identifies server-side technologies & queries historical CVE maps.<br>• Full MX, TXT, and A record structural mapping.<br>• Deep-dive cryptographic certificate strength evaluation. |
+| **02 🕵️ Web & Data Mining** | DORK-o-Matic <br> Subdomain Enum <br> Social Recon | • Automated Google Dorking pipelines targeting leaked data leaks.<br>• Map hidden entry points, dangling CNAMEs, and sub-assets.<br>• High-fidelity multi-threaded target profile mapping across 50+ sites. |
+| **03 📡 Network & Threats** | Ransom-Watch `LIVE`<br> IoT Discovery <br> Watchtower `LIVE` | • Monitors dark web ransomware groups & target disclosures in real-time.<br>• Pinpoints public-facing connected devices & industrial assets.<br>• High-frequency active monitoring of critical assets. |
 
 ---
 
-## Quick Start
+## 🛠️ Installation & Setup
 
-Get your local framework up and running in a few simple steps:
+Set up the execution environment on your local system:
 
 ```bash
+# Clone the tactical repository from source
 git clone [https://github.com/w4sif404/xophy](https://github.com/w4sif404/xophy)
 cd xophy
-chmod +x install.sh && ./install.sh
-python3 -m venv venv && source venv/bin/activate
+
+# Configure execution permissions and run dependencies deployment
+chmod +x install.sh
+./install.sh
+
+# Isolate environment dependencies safely
+python3 -m venv venv
+source venv/bin/activate
+
+# Initialize the interactive command center console
 python3 core/cli.py
