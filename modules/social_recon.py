@@ -15,7 +15,6 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 import cloudscraper
 
 # Global Terminal Aesthetics
@@ -113,7 +112,16 @@ class SocialReconEngine:
         self.threads = threads
         self.results = {}
         
+        # Safe Fallback List of Linux & Windows Browser Signatures
+        self.fallback_agents = [
+            "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/21010101 Firefox/115.0",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+        ]
+        
+        # Safely attempt to initialize fake_useragent locally
         try:
+            from fake_useragent import UserAgent
             self.ua = UserAgent()
         except Exception:
             self.ua = None
@@ -121,7 +129,11 @@ class SocialReconEngine:
         self.scraper = cloudscraper.create_scraper()
 
     def _get_headers(self):
-        user_agent = self.ua.random if self.ua else "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/21010101 Firefox/115.0"
+        try:
+            user_agent = self.ua.random if self.ua else random.choice(self.fallback_agents)
+        except Exception:
+            user_agent = random.choice(self.fallback_agents)
+
         return {
             "User-Agent": user_agent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -229,9 +241,9 @@ def run(target):
     """Core entry point hook for the XOPHY Framework CLI."""
     engine = SocialReconEngine(
         username=target, 
-        stealth=False, # Set to False for speed, True if targets block you
-        deep=True,     # Forces raw bio parsing/title extraction
-        threads=15     # Escalated thread concurrency count for 50+ targets
+        stealth=False, 
+        deep=True,     
+        threads=15     
     )
     
     start_time = time.time()
