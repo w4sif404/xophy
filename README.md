@@ -32,19 +32,10 @@ XOPHY is a next-generation reconnaissance framework designed for **ethical OSINT
 ## 📦 Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/w4sif404/xophy.git
-# Enter the directory
+## Installation
+git clone https://github.com/w4sif404/xophy
 cd xophy
+chmod +x install.sh && ./install.sh
 
-# 1. Create a virtual environment
-python3 -m venv venv
-
-# 2. Activate the environment
-# On Linux/Kali:
-source venv/bin/activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-# 4. Run The Tool
+## Usage
 python3 core/cli.py
