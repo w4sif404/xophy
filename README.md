@@ -44,7 +44,7 @@ Set up the execution environment on your local system:
 
 ```bash
 # Clone the tactical repository from source
-git clone [https://github.com/w4sif404/xophy](https://github.com/w4sif404/xophy)
+git clone https://github.com/w4sif404/xophy.git
 cd xophy
 
 # Configure execution permissions and run dependencies deployment
