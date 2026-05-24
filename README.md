@@ -32,11 +32,16 @@ XOPHY is a next-generation reconnaissance framework designed for **ethical OSINT
 ## 📦 Installation
 
 ```bash
+# XOPHY - Advanced OSINT & Recon Framework
+Built by w45if_4o4
+
 ## Installation
 git clone https://github.com/w4sif404/xophy
-## Change Directory
 cd xophy
-## Give persmission and Install requirements
-chmod +x install.sh && ./install.sh
-## Usage
+chmod +x install.sh
+./install.sh
+## Create virtual eniroment
+python3 -m venv venv
+## Run
+source venv/bin/activate
 python3 core/cli.py
