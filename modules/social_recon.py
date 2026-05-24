@@ -13,9 +13,6 @@ import time
 import random
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import requests
-from bs4 import BeautifulSoup
-import cloudscraper
 
 # Global Terminal Aesthetics
 GREEN = "\033[92m"
@@ -25,6 +22,14 @@ BLUE = "\033[94m"
 CYAN = "\033[96m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
+
+# Core safe imports
+try:
+    import requests
+    from bs4 import BeautifulSoup
+except ImportError:
+    print(f"\n{RED}[!] Core dependencies missing. Run: pip install requests beautifulsoup4{RESET}\n")
+    sys.exit(1)
 
 def print_banner():
     banner = f"""
@@ -126,7 +131,14 @@ class SocialReconEngine:
         except Exception:
             self.ua = None
             
-        self.scraper = cloudscraper.create_scraper()
+        # DYNAMIC IMPORT: Bypasses top-level dependency crashes
+        try:
+            import cloudscraper
+            self.scraper = cloudscraper.create_scraper()
+            self.using_cloudscraper = True
+        except ImportError:
+            self.scraper = requests.Session()
+            self.using_cloudscraper = False
 
     def _get_headers(self):
         try:
@@ -191,10 +203,13 @@ class SocialReconEngine:
             else:
                 return platform_name, {"status": "No Account Found", "found": False, "category": config["category"]}
                 
-        except requests.exceptions.RequestException:
+        except Exception:
             return platform_name, {"status": "Connection Error", "found": False, "category": config["category"]}
 
     def execute_recon(self):
+        if not self.using_cloudscraper:
+            print(f"{YELLOW}[!] Notice: 'cloudscraper' missing. Dropping back to native requests engine.{RESET}")
+
         print(f"[*] Thread pool initiated with {BOLD}{self.threads}{RESET} active workers.")
         print(f"[*] Total target nodes mapped: {CYAN}{len(PLATFORMS_REGISTRY)}{RESET}")
         print(f"[*] Target handle: {YELLOW}@{self.username}{RESET}\n")
